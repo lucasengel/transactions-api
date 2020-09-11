@@ -15,11 +15,13 @@ class CreateTransactionService {
   }
 
   public execute({ title, value, type }: Request): Transaction {
-    const balance = this.transactionsRepository.getBalance().total;
+    if (!title || !value || !['income', 'outcome'].includes(type))
+      throw new Error(`Invalid or missing parameters.`);
 
-    if (type === 'outcome' && value > balance) {
+    const balance = this.transactionsRepository.getBalance().total;
+    if (type === 'outcome' && value > balance)
       throw new Error(`You don't have enough balance for this operation.`);
-    }
+
     const transaction = this.transactionsRepository.create({
       title,
       value,

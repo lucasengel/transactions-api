@@ -21,9 +21,6 @@ transactionRouter.get('/', (request, response) => {
 transactionRouter.post('/', (request, response) => {
   const { title, value, type } = request.body;
 
-  if (!title || !value || !type)
-    return response.status(400).json({ error: 'Missing parameters' });
-
   try {
     const createTransaction = new CreateTransactionService(
       transactionsRepository,
