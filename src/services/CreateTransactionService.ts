@@ -32,19 +32,19 @@ class CreateTransactionService {
      * IF YES => use existing
      * IF NO  => create and save new category
      */
-    const existingCategory = await categoriesRepository.findOne({
+    let category = await categoriesRepository.findOne({
       where: {
         title: categoryName,
       },
     });
 
-    const category =
-      existingCategory ||
-      categoriesRepository.create({
+    if (!category) {
+      category = await categoriesRepository.create({
         title: categoryName,
       });
 
-    await categoriesRepository.save(category);
+      await categoriesRepository.save(category);
+    }
 
     /**
      * Check if balance is greater than outcome value
@@ -55,7 +55,7 @@ class CreateTransactionService {
     const { total } = await transactionsRepository.getBalance();
 
     if (type === "outcome" && total < value)
-      throw new AppError("Insuficient funds");
+      throw new AppError("Insufficient funds");
 
     const transaction = transactionsRepository.create({
       title,
