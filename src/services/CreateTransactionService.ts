@@ -16,7 +16,7 @@ class CreateTransactionService {
   public async execute({
     title,
     value,
-    type = "outcome",
+    type,
     category: categoryName = "Uncategorized",
   }: Request): Promise<Transaction> {
     const transactionsRepository = getCustomRepository(TransactionsRepository);
@@ -24,7 +24,14 @@ class CreateTransactionService {
 
     if (!title || !value) throw new AppError("Missing parameters");
 
-    // Check for existing category
+    if (type !== "outcome" && type !== "income")
+      throw new AppError("Invalid type");
+
+    /**
+     * Checks for category existence
+     * IF YES => use existing
+     * IF NO  => create and save new category
+     */
     const existingCategory = await categoriesRepository.findOne({
       where: {
         title: categoryName,
@@ -38,6 +45,17 @@ class CreateTransactionService {
       });
 
     await categoriesRepository.save(category);
+
+    /**
+     * Check if balance is greater than outcome value
+     * IF YES => create transaction
+     * IF NO  => reject transaction
+     */
+
+    const { total } = await transactionsRepository.getBalance();
+
+    if (type === "outcome" && total < value)
+      throw new AppError("Insuficient funds");
 
     const transaction = transactionsRepository.create({
       title,
