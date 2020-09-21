@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev:server": "ts-node-dev --inspect --transpile-only --ignore-watch node_modules src/server.ts",
-    "start": "ts-node src/index.ts",
+    "start": "npm run dev:server",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
     "mig:create": "ts-node-dev ./node_modules/typeorm/cli.js migration:create -n",
     "mig:revert": "ts-node-dev ./node_modules/typeorm/cli.js migration:revert",
@@ -14,6 +14,7 @@
     "test": "cross-env NODE_ENV=test jest"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "csv-parse": "^4.8.8",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@types/csv-parse": "^1.2.2",
+    "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",
     "@types/express-serve-static-core": "^4.17.12",
     "@types/jest": "^26.0.13",
